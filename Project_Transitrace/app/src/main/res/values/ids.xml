@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="textViewFrom" type="id" />
+    <item name="editTextFrom" type="id" />
+    <item name="editTextTo" type="id" />
+    <item name="buttonReset" type="id" />
+    <item name="textViewTo" type="id" />
+    <item name="buttonTrack" type="id" />
+</resources>
