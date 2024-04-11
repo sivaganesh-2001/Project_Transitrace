@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
+body{
+   margin:0;
+   padding:0;
+   box-sizing: border-box;
+   width: 100%;
+   font-family: 'poppins',sans-serif;
+}
+
+/*----------Navbar---------------*/
+#navbar{
+    position: sticky;
+    top:0;
+    background:white;
+    z-index: 10;
+}
+
+
+.bold{
+    font-size: 25px;
+
+}
+li{
+    padding: 5px;
+}
+.nav-link{
+    font-size: 15px;
+    font-weight: bold;
+    border:2px solid transparent;
+}
+
+.nav-link:hover{
+    border-bottom: 2px solid blue;
+    transition: .1s;
+}
+section{
+    min-height: 100vh;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/*---------HOME------------*/
+
+span{
+    color:blue;
+    font-weight: bold;
+}
+p{
+    font-size: 18px;
+
+}
+
+/*----About---*/
+
+#about img{
+    width:25rem;
+    height: 25rem;
+    border-radius: 50px;
+
+}
+
+/*-----services------*/
+
+.card img{
+    height: 200px;
+    transition: 1s;
+}
+
+.inner{
+    overflow: hidden;
+}
+.card img:hover{
+    transform: scale(1.5);
+    transition: 1s;
+}
+
+/*-----contact*/
+
+form{
+    padding: 40px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,.2),
+                -1px -1px 5px rgba(0,0,0,0.05);
+
+    border-radius: 20px;
+}
+
+
+.navbar-toggler {
+    cursor: pointer;
+    /* Your styling for the toggler button */
+}
+
+.menu-content {
+    display: none;
+    /* Your styling for the menu content */
+}
+
+#menu-toggle:checked + .navbar-toggler + .menu-content {
+    display: block;
+}

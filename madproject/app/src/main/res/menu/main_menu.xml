@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn = "navigation_view">
+
+    <group
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/baseline_home_24"
+
+            android:title="Home"/>
+
+
+
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/baseline_person_24"
+
+
+            android:title="Login" />
+        <item
+            android:id="@+id/myshare"
+            android:icon="@drawable/baseline_share_24"
+
+            android:title="Share" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/baseline_contact_support_24"
+
+            android:title="About Us" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/baseline_logout_24"
+            android:title="Logout"/>
+
+    </group>
+    <item
+        android:title="support">
+
+        <menu>
+            <item
+                android:id="@+id/emergency"
+                android:icon="@drawable/baseline_announcement_24"
+                android:title="Emergency"/>
+
+            <item
+                android:id="@+id/contact_us"
+                android:icon="@drawable/baseline_local_phone_24"
+                android:title="contact us" />
+            <item
+                android:id="@+id/faq"
+                android:icon="@drawable/baseline_question_mark_24"
+                android:title="FAQ"/>
+
+
+
+
+        </menu>
+
+    </item>
+
+</menu>
