@@ -5,7 +5,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.libraries.places.api.Places
+
 
 
 class UserHomeActivity : AppCompatActivity() {
@@ -18,7 +18,7 @@ class UserHomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_home)
-        Places.initialize(applicationContext, "AIzaSyD2SC7a2Yy3frl_92aQ1POI1QUXagOA25w") // Initialize Firebase
+
         val profile = findViewById<ImageView>(R.id.profile)
         profile.setOnClickListener {
             val intent = Intent(this, DrawerActivity::class.java)

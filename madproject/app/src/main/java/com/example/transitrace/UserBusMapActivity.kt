@@ -1,10 +1,18 @@
 package com.example.transitrace
+
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
@@ -14,6 +22,7 @@ class UserBusMapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var liveLocationRef: DatabaseReference
     private lateinit var busKey: String
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +30,9 @@ class UserBusMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        // Initialize FusedLocationProviderClient
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         // Get the busKey from the intent
         busKey = intent.getStringExtra("busKey") ?: ""
@@ -32,27 +44,83 @@ class UserBusMapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Listen for changes in the live_location subcollection
-        liveLocationRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Clear existing markers
-                mMap.clear()
+        // Request location permission
+        if (checkLocationPermission()) {
+            // Get user's last known location
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                // Add a marker for the user's location
+                val userLocation = LatLng(location.latitude, location.longitude)
+                val userMarkerOptions = MarkerOptions().position(userLocation).title("Your Location")
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_icon)) // Custom user icon
+                mMap.addMarker(userMarkerOptions)
 
-                // Fetch the latest live location data
-                val latitude = dataSnapshot.child("latitude").getValue(Double::class.java)
-                val longitude = dataSnapshot.child("longitude").getValue(Double::class.java)
+                // Move camera to user's location
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15f))
 
-                // If location data exists, add a marker on the map
-                if (latitude != null && longitude != null) {
-                    val location = LatLng(latitude, longitude)
-                    mMap.addMarker(MarkerOptions().position(location).title("Bus Location"))
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
-                }
+                // Listen for changes in the live_location subcollection
+                liveLocationRef.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        // Fetch the latest live location data
+                        val latitude = dataSnapshot.child("latitude").getValue(Double::class.java)
+                        val longitude = dataSnapshot.child("longitude").getValue(Double::class.java)
+
+                        // If location data exists, update the bus marker position without altering the zoom level
+                        if (latitude != null && longitude != null) {
+                            val busLocation = LatLng(latitude, longitude)
+                            mMap.clear() // Clear existing markers
+                            val busMarkerOptions = MarkerOptions().position(busLocation).title("Bus Location")
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.bus_icon)) // Custom bus icon
+                            mMap.addMarker(busMarkerOptions)
+                        }
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        // Handle database error
+                    }
+                })
+            }.addOnFailureListener { exception ->
+                // Handle failure to get user's last known location
+                Toast.makeText(this, "Error getting location: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
+        } else {
+            // Request location permission if not granted
+            requestLocationPermission()
+        }
+    }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Handle database error
+    private fun checkLocationPermission(): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            LOCATION_PERMISSION_REQUEST_CODE
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, reload the map
+                recreate()
+            } else {
+                // Permission denied
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
     }
 }
